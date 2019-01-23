@@ -1,0 +1,235 @@
+#include <stdio.h>
+typedef int semaphore;
+1.生产者与消费者
+/*要求：
+		1.一个缓冲区，生产者放产品，消费者取出商品
+		2.完成同步互斥不能冲突
+		3.缓冲区是一个临界资源，用互斥实现
+		4.存取顺序用同步实现*/
+semaphore mutex=0;//互斥信号量
+semaphore full = 0;//满的空间为0个
+semaphore empty = n;//空的有n个;
+int count=0;//记录产品的数量
+//缓冲区最大为n
+Producer()
+{
+	while(true)
+	{
+		P(empty);
+		P(mutex);
+		//生产
+		V(mutex);
+		V(empty);
+	}
+}
+
+Consumer()
+{
+	while(true)
+	{
+		P(full);
+		P(mutex);
+		//消费
+		V(mutex);
+		V(full);
+	}
+}
+		
+2.吃水果问题
+/*要求：
+		1.有一个桌子，父亲放苹果，母亲放橘子
+		2.女儿吃苹果，儿子吃橘子
+		3.桌子上只能放一个水果
+		4.由于盘子只能放一个水果，所以不用设置互斥信号量，假如不是一个那么就要设置了*/
+semaphore plate=1; //表示有一个盘子（缓冲区）
+semaphore apple=0; 
+semaphore orange=0;
+father()
+{
+	while(true)
+	{
+		P(plate); //先检查盘子空不空（plate是father和mother的临界资源）
+		//放apple
+		V(apple);
+		
+	}
+}
+
+mother()
+{
+	while(true)
+	{
+		P(plate);
+		//放橘子
+		V(orange);
+	}
+}
+
+daughter()
+{
+	while(true)
+	{
+		P(orange);
+		//吃橘子
+		V(plate); //通知father/mother可以放水果了
+	}
+}
+
+son()
+{
+	while(true)
+	{
+		P(apple);
+		//吃苹果
+		V(plate);
+	}
+}
+3.吸烟者问题
+/*要求：
+		1.三个吸烟者都能自产烟卷
+		2.每个烟卷都需要 水 纸 烟草 这三种资源
+		3.每个吸烟者都持有一种不同的材料，但是都缺少两种材料*/
+		4.提供者一次给1.2.3号吸烟者两种资源，并且只有在前面的吸烟者吸烟之后才发给下一个吸烟者
+*/
+semaphore offer1=1; //负责同步的四个提醒吸烟者的信号量 
+semaphore offer2=1;
+semaphore offer3=1;
+semaphore offer4=1;
+semaphore finish=0; //吸烟结束完成的信号量，初始为0 负责同步
+int num=1;
+Producer()
+{
+	while(true)
+	{
+		if(1==num)
+		{
+			//给smoker1
+			提供材料
+			V(smoker1);
+		}
+		else if(2==num)
+		{
+			//给smoker2
+			提供材料
+			V(smoker2);
+		}
+		else if(3==num)
+		{
+			//给smoker3
+			提供材料
+			V(smoker3);
+		}
+		else if(4==num)
+		{
+			//给smoker4
+			提供材料
+			V(smoker4);
+		}
+		num=(num+1)%4;
+		P(finish); //发放材料之后等待
+	}
+}
+
+smoker1()
+{
+	while(true)
+	{
+		P(smoker1);
+		//吸烟
+		V(finsh);
+	}
+}
+
+smoker2()
+{
+	while(true)
+	{
+	P(smoker2);
+		//吸烟
+		V(finsh);
+	}
+}
+
+smoker3()
+{
+	while(true)
+	{
+	P(smoker3);
+		//吸烟
+		V(finsh);
+	}
+}
+
+smoker4()
+{
+	while(true)
+	{
+	P(smoker4);
+		//吸烟
+		V(finsh);
+	}
+}
+ 
+4.哲学家问题
+chopsticks[5]={1,1,1,1,1};//设置五个信号量，代表5个筷子
+/*那么每个哲学家的编号对应其左边的筷子，右边的筷子用（编号+1）%5得到*/
+semaphore mutex = 1; //将哲学家拿筷子这件事设置为临界区，也就是有哲学家拿筷子的时候，其他哲学家不能拿筷子
+//如果有哲学家没拿到筷子，那么其他即便是旁边有筷子的哲学家也不能拿，因为得不到mutex信号量
+pi() /*代表第i个哲学家*/
+{
+	while(true)
+	{
+		P(mutex);
+		P(chopsticks[i]);  //获取左边的筷子
+		P(chopsticks[(i+1)%5]);  //获取右边的筷子
+		V(mutex);
+		//..吃东西
+		V(chopsticks[i]);
+		V(chopsticks[(i+1)%5]);
+	}
+}
+
+5.读者写者问题
+/*要求 1.Writer只能独立的访问临界资源
+	   2.Reader可以多个进程访问临界资源
+	   */
+semaphore rw=1; //代表临界资源的信号量
+semaphore mutex=1; //对上锁的过程加锁，将其变为原子操作
+semaphore w=1; //解决writer进程饥饿的问题 
+int count=0; // 记录有几个Reader正在访问临界资源
+
+Reader()
+{
+	while(true)
+	{
+		P(w);
+		P(mutex);  //将加锁的过程变为原子操作
+		if(0==count)
+		P(rw);
+		count++;
+		V(mutex);
+		V(w);
+		
+		//..读内容
+		
+		P(mutex); //将放锁的过程变为原子操作
+		count--;
+		if(0==count)
+		V(rw);
+		V(mutex);
+	}
+
+}
+
+Writer()
+{
+	while(true)
+	{
+		P(w);
+		P(rw);
+		//..写内容
+		V(rw);
+		V(w);
+	}
+}
+

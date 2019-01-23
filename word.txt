@@ -1,0 +1,46 @@
+Peripheral 外围的
+Synchronized 使同步
+Trigger 触发
+invoke  唤起
+explicity明确的
+modify修改
+assert 断言 主张
+asynchronous 异步的
+defer推迟
+maskable可屏蔽的
+unmaskable 不可屏蔽的
+hence因此
+overhead 经常性的
+preemet 预先制止
+Volatile 易失的
+bootstrap引导
+firmwar固件
+internal 内部的
+operand操作元
+retrieved取回
+hierarchy分级制度
+capacity容量
+variant变体
+terminology术语
+disparity悬殊的差异
+portion部分
+dedicated贡献
+bulk大量
+intervention干扰干涉
+categorize分类
+dominate控制
+thoughtput吞吐量
+ratio比例、
+symmetric对称的
+simultaneously同时的
+deteriorate 退化 下降
+significantly显著的
+ cluster 聚集的
+concrete 混凝土 具体的
+redundancy冗余的
+curcial重要的
+diagnose诊断 
+degradation退化
+socket插口
+manipulation 操作 篡改
+mathphor 象征 比喻
